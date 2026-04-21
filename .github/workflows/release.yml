@@ -4,33 +4,31 @@ on:
     paths:
       - "Syncfusion/*.zip"
 
-permissions:
-  contents: write
-
 jobs:
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
-      - name: Get version from zip filename
+      - name: Get newly added ZIP
         run: |
-          FILE=$(ls Syncfusion/*.zip | head -n 1)
+          FILE=$(git diff --name-only --diff-filter=A HEAD~1 HEAD -- 'Syncfusion/*.zip' | head -n 1)
+          if [ -z "$FILE" ]; then
+            exit 1
+          fi
           BASENAME=$(basename "$FILE")
           VERSION="${BASENAME%.zip}"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "FILE=$FILE" >> $GITHUB_ENV
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           name: Syncfusion-${{ env.VERSION }}
           tag_name: v${{ env.VERSION }}
-          files: Syncfusion/*.zip
-          make_latest: true
+          files: ${{ env.FILE }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
