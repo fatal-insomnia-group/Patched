@@ -1,27 +1,28 @@
 name: Auto Release ZIP
-
 on:
   push:
     paths:
       - "Syncfusion/*.zip"
+
 permissions:
   contents: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Get version from zip filename
         run: |
           FILE=$(ls Syncfusion/*.zip | head -n 1)
           BASENAME=$(basename "$FILE")
-
           VERSION="${BASENAME%.zip}"
-
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Create Release
@@ -30,5 +31,6 @@ jobs:
           name: Syncfusion-${{ env.VERSION }}
           tag_name: v${{ env.VERSION }}
           files: Syncfusion/*.zip
+          make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
