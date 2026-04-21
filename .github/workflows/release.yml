@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - "Syncfusion/*.zip"
+permissions:
+  contents: write
 
 jobs:
   release:
