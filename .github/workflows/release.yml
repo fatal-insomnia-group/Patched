@@ -34,7 +34,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           name: Syncfusion-${{ env.VERSION }}
-          tag_name: v${{ env.VERSION }}
+          tag_name: Syncfusion-${{ env.VERSION }}
           files: ${{ env.FILE }}
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
