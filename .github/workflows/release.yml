@@ -1,0 +1,32 @@
+name: Auto Release ZIPs
+
+on:
+  push:
+    paths:
+      - "Syncfusion/*.zip"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get version from zip name
+        run: |
+          FILE=$(ls Syncfusion/*.zip | head -n 1)
+          BASENAME=$(basename "$FILE")
+
+          VERSION=$(echo "$BASENAME" | cut -d'-' -f1)
+
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Syncfusion-${{ env.VERSION }}
+          tag_name: v${{ env.VERSION }}
+          files: Syncfusion/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
