@@ -11,14 +11,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Get newly added ZIP
         run: |
-          FILE=$(git diff --name-only --diff-filter=A HEAD~1 HEAD -- 'Syncfusion/*.zip' | head -n 1)
+          FILE=$(git show --name-only --diff-filter=A --format="" ${{ github.sha }} -- 'Syncfusion/*.zip' | head -n 1)
+
+          if [ -z "$FILE" ]; then
+            FILE=$(ls -t Syncfusion/*.zip 2>/dev/null | head -n 1)
+          fi
+
           if [ -z "$FILE" ]; then
             exit 1
           fi
+
           BASENAME=$(basename "$FILE")
           VERSION="${BASENAME%.zip}"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
