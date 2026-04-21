@@ -1,4 +1,4 @@
-name: Auto Release ZIPs
+name: Auto Release ZIP
 
 on:
   push:
@@ -13,12 +13,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get version from zip name
+      - name: Get version from zip filename
         run: |
           FILE=$(ls Syncfusion/*.zip | head -n 1)
           BASENAME=$(basename "$FILE")
 
-          VERSION=$(echo "$BASENAME" | cut -d'-' -f1)
+          VERSION="${BASENAME%.zip}"
 
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
